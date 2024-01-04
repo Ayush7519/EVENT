@@ -150,4 +150,5 @@ class GraphAPI(APIView):
             data_list.append({"labels": labels, "values": values})
 
         # Return the data for all months
+
         return Response(data_list)
