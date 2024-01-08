@@ -71,4 +71,5 @@ urlpatterns = [
         views.LoginArtistEventDetailsApiView.as_view(),
         name="login artist event detail view path",
     ),
+    path("test/", views.test, name="testing"),
 ]

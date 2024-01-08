@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     "django_filters",  # install package name.
     "drf_yasg",  # for the documentation of the api.
     "booking",  # application name
+    "django_celery_results",  # this is for the celery.
+    "django_celery_beat",  # this is for the celery beat.
 ]
 
 MIDDLEWARE = [
@@ -188,3 +190,17 @@ CORS_ALLOWED_ORIGINS = [
 # REST_FRAMEWORK = {
 #     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",)
 # }
+
+
+# celery setting.
+CELERY_BROKER_URL = "redis://127.0.0.1:6379"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = "Asia/Kathmandu"
+
+# to check the status of the work/task.
+CELERY_RESULT_BACKEND = "django-db"
+
+# this is for the celery beat configuration.
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"

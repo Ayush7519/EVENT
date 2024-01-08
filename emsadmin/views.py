@@ -300,3 +300,13 @@ class LoginArtistEventDetailsApiView(generics.ListAPIView):
                 {"msg": "Oops! Now Data Found.!!!"},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+
+from django.http import HttpResponse
+
+from .tasks import test_function
+
+
+def test(request):
+    test_function.delay()
+    return HttpResponse("Done")
