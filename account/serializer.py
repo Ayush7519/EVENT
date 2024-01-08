@@ -147,9 +147,25 @@ class UserPasswordReset_Serializer(serializers.ModelSerializer):
 # ARTIST
 # create serializer for the artist.
 class Artist_Serializer(serializers.ModelSerializer):
+    photo = serializers.ImageField(max_length=None, use_url=True)
+
     class Meta:
         model = Artist
-        fields = "__all__"
+        # fields = "__all__"
+        fields = (
+            "user",
+            "type_of_the_performer",
+            "performed_in",
+            "description",
+            "is_available",
+            "manager",
+            "photo",
+            "gender",
+            "province",
+            "district",
+            "municipality",
+            "ward",
+        )
 
 
 class Artist_Serializer_Full_Details(serializers.ModelSerializer):

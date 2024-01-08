@@ -27,11 +27,19 @@ class Event_Serializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+# creating the sponser serializer for the event list.
+class SponserList_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sponser
+        fields = ("photo", "name", "sponser_type")
+
+
 # creating serializer for the event list/detail view...
 class EventList_Serializer(serializers.ModelSerializer):
     # this done for converting the pimary key into string.
     artist = serializers.StringRelatedField(many=True)
-    sponser = serializers.StringRelatedField(many=True)
+    # sponser = serializers.StringRelatedField(many=True)
+    sponser = SponserList_Serializer(many=True)
 
     class Meta:
         model = Event

@@ -44,7 +44,7 @@ urlpatterns = [
     path(
         "event/list/",
         views.EventListApiView.as_view(),
-        name="event details list path",
+        name="event details list path for the admin.",
     ),
     path(
         "event/update/<int:pk>/",

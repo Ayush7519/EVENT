@@ -11,19 +11,21 @@ def category_image_dir_path(instance, filename):
     event_name = instance.name
     img = instance.photo  # name of the image.
     ext = img.name.split(".")[-1]  # extracting the image extensions
-    filename = str(event_name) + "." + str(ext)
-    # print(filename)
-    # validating the image extension.
-    if (
-        str(ext).lower() == "png"
-        or str(ext).lower() == "jpg"
-        or str(ext).lower() == "jpeg"
-    ):
-        return filename
-    else:
+    # filename = str(event_name) + "." + str(ext)
+
+    # Validate image extension
+    valid_extensions = ["png", "jpg", "jpeg"]
+    if ext.lower() not in valid_extensions:
         raise serializers.ValidationError(
-            "Extension Doesnot match.It should be of png,jpg,jpeg"
+            "Extension does not match. It should be of png, jpg, jpeg"
         )
+
+    # Define the directory path for event photos
+    event_photos_directory = "Sponser Photos"
+
+    # Construct the file path within the event photos directory
+    filename = f"{event_name}.{ext}"
+    return os.path.join(event_photos_directory, filename)
 
 
 # SPONSER MODEL
@@ -50,7 +52,8 @@ class Sponser(models.Model):
     amount = models.BigIntegerField(null=False, blank=False)
     photo = models.ImageField(
         upload_to=category_image_dir_path,
-        blank=True,
+        blank=False,
+        null=False,
     )
 
     def dymanic_amount_value(self):
