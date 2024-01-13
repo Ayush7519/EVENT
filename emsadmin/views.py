@@ -134,12 +134,21 @@ class EventCompleteApiView(APIView):
         )
 
 
-# Event List.
+# Event List.(for the admin site.)
 class EventListApiView(generics.ListAPIView):
     queryset = Event.objects.all().order_by("-date", "-time")
     serializer_class = EventList_Serializer
     pagination_class = MyPageNumberPagination
     renderer_classes = [UserRenderer]
+
+
+# Event list for the user to show.
+class EventListUserApiView(generics.ListAPIView):
+    serializer_class = EventList_Serializer
+    renderer_classes = [UserRenderer]
+
+    def get_queryset(self):
+        return Event.objects.filter(event_completed=False)
 
 
 # Event Search.

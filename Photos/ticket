@@ -1,76 +1,4 @@
- {% comment %} <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Ticket Example</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-    }
-    
-    .ticket {
-        width: 500px;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .ticket-header {
-        text-align: center;
-        margin-bottom: 15px;
-    }
-    
-    .ticket-content p {
-        margin: 5px 0;
-    }
-    
-    button {
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    
-    button:hover {
-        background-color: #0056b3;
-    }
-    
-    p {
-        background-color: red;
-    }
-  </style>
-</head>
-<body>
-  <div class="ticket">
-    <div class="ticket-header">
-      <h1>Ticket</h1>
-    </div>
-    <div class="ticket-content">
-        <p>Ticket Number: {{ticket.ticket.ticket_num}}</p>
-        <p>Location: {{ticket.event.location}}</p>
-        <p>Event Name: {{ticket.event}}</p>
-        <p>Date: {{ticket.event.date}}</p>
-        <p>Time: {{ticket.event.time}}</p>
-        <p>Artist: {{ticket.event.artist}}</p>
-        <p>Customer Name: {{ticket.user}}</p>
-        <p>Quantity: {{ticket.ticket.quantity}}</p>
-        <p>Price: Rs.{{ticket.ticket.total_price}}</p>
-    </div>
-    <button onclick="printTicket()">Print Ticket</button>
-  </div>
-
-  <script src="scripts.js"></script>
-</body>
-</html>  {% endcomment %}
+ 
 
 <html lang="en">
 <head>
@@ -289,23 +217,23 @@ html {
 			</p>
 			<div class="ticket-number">
 				<p>
-					#{{ticket.ticket.ticket_num}}
+					#TKT20240110210759853933
 				</p>
 			</div>
 		</div>
 
 		<div class="ticket-info">
 			<p class="date">
-				<span>{{ticket.event.time}}</span>
-				<span class="june-29">{{ticket.event.date}}</span>
-				<span>Quantity: {{ticket.ticket.quantity}}</span>
+				<span>3:40 p.m.</span>
+				<span class="june-29">Jan. 9, 2024</span>
+				<span>Quantity: 1</span>
 			</p>
 			<div class="show-name">
-				<h1>{{ticket.event}}</h1>
+				<h1>The Greate Progrma Part 2</h1>
 			</div>
 			<div class="time">
-				<p>Artists: {{ticket.event.artist.user.name}}</p>
-				<p>Customer Name: {{ticket.user}}</p>
+				<p>Artists: </p>
+				<p>Customer Name: Ayush Kandel</p>
 			</div>
 			<p class="location"><span>@AB Events</span>
 				<span class="separator"><i class="far fa-smile"></i></span><span>Bharatpur, Nepal</span>
@@ -314,12 +242,10 @@ html {
 	</div>
 	<div class="right">
 		<div class="right-info-container">
-			{% comment %} <div class="show-name">
-				<h1>SOUR Prom</h1>
-			</div> {% endcomment %}
+			
 			<div class="time">
-				<span>{{ticket.event.time}}</span>
-				<span>{{ticket.event.date}}</span>
+				<span>3:40 p.m.</span>
+				<span>Jan. 9, 2024</span>
 			</div>
 			<div class="barcode">
 				<img src="https://external-preview.redd.it/cg8k976AV52mDvDb5jDVJABPrSZ3tpi1aXhPjgcDTbw.png?auto=webp&s=1c205ba303c1fa0370b813ea83b9e1bddb7215eb" alt="QR code">

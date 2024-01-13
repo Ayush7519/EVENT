@@ -1,0 +1,3 @@
+function printTicket() {
+    window.print();
+}

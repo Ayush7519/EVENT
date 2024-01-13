@@ -11,4 +11,5 @@
         },
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
+    "liveServer.settings.port": 5501,
 }

@@ -56,15 +56,6 @@ class Sponser(models.Model):
         null=False,
     )
 
-    def dymanic_amount_value(self):
-        value = self.sponser_type
-        print(value)
-        if value == "title sponser":
-            return 10000
-
-    def get_dynamic_amount(self):
-        return self.dymanic_amount_value
-
     def __str__(self):
         return self.name
 

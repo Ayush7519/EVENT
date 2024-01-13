@@ -28,6 +28,14 @@ class TicketCreateApiView(generics.CreateAPIView):
     def post(self, request, event_id, *args, **kwargs):
         try:
             event_data = Event.objects.get(id=event_id)
+            # related_artists = event_data.artist.all()
+            # taking out the artist data from the event.
+            # artist_list = []
+            # for artist in related_artists:
+            #     print(artist)
+            #     artist_list.append(artist)
+            # print(artist_list)
+
             rcp = event_data.remaining_capacity
         except Event.DoesNotExist:
             return Response(
@@ -64,17 +72,24 @@ class TicketCreateApiView(generics.CreateAPIView):
                 event_data.save()
             serializer.save()
             # this should be done after the payment is sucessfully done.
-            event_data.no_of_participant = qtn
+            event_data.no_of_participant = event_data.no_of_participant + qtn
             event_data.save()
             user = request.user
             # data for the front-end
             fdata = serializer.data
+            user_name = request.user
+            merged_data = {
+                "ticket": fdata,
+                "event": event_data,
+                "user": user_name,
+            }
 
             # rendering the template in the api.
             # yo chai eswea ma connect garey si sucess response aayasi ballaw garna parxa.
-            email_content = render_to_string("ticket.html", {"ticket": fdata})
+            email_content = render_to_string("ticket.html", {"ticket": merged_data})
             data = {
                 "subject": "Your Ticket Booking Have Been Sucesfully Booked",
+                "body": "Please find the ticket as an attachment.",
                 "to_email": user.email,
                 "html_message": email_content,
             }

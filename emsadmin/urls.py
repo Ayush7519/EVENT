@@ -47,6 +47,11 @@ urlpatterns = [
         name="event details list path for the admin.",
     ),
     path(
+        "event/list/user/",
+        views.EventListUserApiView.as_view(),
+        name="path to show the event to the user based on event_complete",
+    ),
+    path(
         "event/update/<int:pk>/",
         views.EventUpdateApiView.as_view(),
         name="event update path,",
