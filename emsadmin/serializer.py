@@ -27,6 +27,13 @@ class Event_Serializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+# this is for the ticket booking.
+class EventListT_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Event
+        fields = "__all__"
+
+
 # creating the sponser serializer for the event list.
 class SponserList_Serializer(serializers.ModelSerializer):
     class Meta:
@@ -40,6 +47,7 @@ class EventList_Serializer(serializers.ModelSerializer):
     artist = serializers.StringRelatedField(many=True)
     # sponser = serializers.StringRelatedField(many=True)
     sponser = SponserList_Serializer(many=True)
+    # artist = EventListT_Serializer(many=True)
 
     class Meta:
         model = Event

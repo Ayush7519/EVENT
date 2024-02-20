@@ -32,6 +32,9 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    # this is for implementing the channels.
+    "channels",
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -49,6 +52,7 @@ INSTALLED_APPS = [
     "booking",  # application name
     "django_celery_results",  # this is for the celery.
     "django_celery_beat",  # this is for the celery beat.
+    "notification",
 ]
 
 MIDDLEWARE = [
@@ -80,7 +84,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "ems.wsgi.application"
+# WSGI_APPLICATION = "ems.wsgi.application"
+ASGI_APPLICATION = "ems.asgi.application"
 
 
 # Database
@@ -204,3 +209,13 @@ CELERY_RESULT_BACKEND = "django-db"
 
 # this is for the celery beat configuration.
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+# implementation of the channel layers.
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}

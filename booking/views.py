@@ -28,13 +28,6 @@ class TicketCreateApiView(generics.CreateAPIView):
     def post(self, request, event_id, *args, **kwargs):
         try:
             event_data = Event.objects.get(id=event_id)
-            # related_artists = event_data.artist.all()
-            # taking out the artist data from the event.
-            # artist_list = []
-            # for artist in related_artists:
-            #     print(artist)
-            #     artist_list.append(artist)
-            # print(artist_list)
 
             rcp = event_data.remaining_capacity
         except Event.DoesNotExist:
@@ -93,7 +86,7 @@ class TicketCreateApiView(generics.CreateAPIView):
                 "to_email": user.email,
                 "html_message": email_content,
             }
-            Util.send_email1(data)
+            # Util.send_email1(data)
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED,

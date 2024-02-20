@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timedelta
 
 from django.db import models
 from rest_framework import serializers
@@ -111,6 +112,46 @@ class Event(models.Model):
         null=False,
         blank=False,
     )
+
+    # here we are over writing the save model for the notification model.
+    def save(self, *args, **kwargs):
+        # aafu vanda tala ko model bata import gare function vitrai garna parxa
+        from notification.models import Notification
+
+        # here we are checking if notification is present in the model or not.
+        notification_instance = Notification.objects.filter(event=self).first()
+        super(Event, self).save(*args, **kwargs)
+
+        if notification_instance:
+            print("yes")
+            # Update fields of the existing Notification
+            notification_instance.event = self
+            # ... update other fields as needed
+            notification_instance.save()
+        else:
+            # here we make the message to send through the channle
+            message = (
+                "Here we go new event alert!!!"
+                + " "
+                + self.event_name
+                + " "
+                + "on"
+                + " "
+                + str(self.date)
+                + " "
+                + "at"
+                + " "
+                + str(self.time)
+                + "."
+            )
+            current_date_time = datetime.now()
+            updated_date = current_date_time + timedelta(minutes=1)
+            notificaton_data = Notification(
+                event=self,
+                message=message,
+                send_on=updated_date,
+            )
+            notificaton_data.save()
 
     def __str__(self):
         return self.event_name

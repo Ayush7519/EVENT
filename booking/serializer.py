@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from emsadmin.models import Event
 from emsadmin.serializer import EventList_Serializer
 
 from .models import Ticket
