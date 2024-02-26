@@ -151,6 +151,32 @@ class EventListUserApiView(generics.ListAPIView):
         return Event.objects.filter(event_completed=False)
 
 
+# Event detail view for the frontend.
+class EventDetailApiiView(generics.ListAPIView):
+    serializer_class = EventList_Serializer
+    renderer_classes = [UserRenderer]
+
+    def get_queryset(self):
+        event_id = self.kwargs["pk"]
+        try:
+            event_data = Event.objects.get(id=event_id)
+            print(event_data)
+            return Event.objects.filter(id=event_id)
+        except Event.DoesNotExist:
+            return Event.objects.none()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if queryset.exists():
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"msg": f"Event with id {self.kwargs['pk']} is not available!"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+
 # Event Search.
 # this is for the front end user so they can search the event based on their desire.
 class EventSearchApiView(generics.ListAPIView):

@@ -76,5 +76,10 @@ urlpatterns = [
         views.LoginArtistEventDetailsApiView.as_view(),
         name="login artist event detail view path",
     ),
+    path(
+        "event/details/<int:pk>/",
+        views.EventDetailApiiView.as_view(),
+        name="path to get the detail of the specific event with the help of id.",
+    ),
     # path("test/", views.test, name="testing"),
 ]
