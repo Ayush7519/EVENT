@@ -268,29 +268,29 @@ class LoginArtistEventDetailsApiView(generics.ListAPIView):
         current_date = datetime.now()
         next_day_current_date = current_date + timedelta(days=1)
         print(user_artist)
-        if name == "All":
+        if name == "all":
             return Event.objects.filter(artist=user_artist)
-        elif name == "Complete":
+        elif name == "complete":
             return Event.objects.filter(
                 artist=user_artist,
                 event_completed=True,
             )
-        elif name == "Pending":
+        elif name == "pending":
             return Event.objects.filter(
                 artist=user_artist,
                 event_completed=False,
             )
-        elif name == "Today":
+        elif name == "today":
             return Event.objects.filter(
                 artist=user_artist,
                 date=current_date,
             )
-        elif name == "Tomorrow":
+        elif name == "tomorrow":
             return Event.objects.filter(
                 artist=user_artist,
                 date=next_day_current_date,
             )
-        elif name == "Upcome":
+        elif name == "upcome":
             return Event.objects.filter(
                 artist=user_artist,
                 date__gt=next_day_current_date,
@@ -298,6 +298,7 @@ class LoginArtistEventDetailsApiView(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
+        print(queryset)
         if queryset.exists():
             serializer = self.get_serializer(queryset, many=True)
             return Response(
@@ -309,12 +310,3 @@ class LoginArtistEventDetailsApiView(generics.ListAPIView):
                 {"msg": "Oops! Now Data Found.!!!"},
                 status=status.HTTP_404_NOT_FOUND,
             )
-
-
-from django.http import HttpResponse
-
-from .tasks import test_function
-
-# def test(request):
-#     test_function.delay()
-#     return HttpResponse("Done")

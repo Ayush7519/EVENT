@@ -86,7 +86,7 @@ class TicketCreateApiView(generics.CreateAPIView):
                 "to_email": user.email,
                 "html_message": email_content,
             }
-            # Util.send_email1(data)
+            Util.send_email1(data)
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED,

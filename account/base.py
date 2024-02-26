@@ -34,7 +34,12 @@ class BaseModel(models.Model):
         blank=False,
         null=False,
     )
-    contact = models.BigIntegerField(validators=[iscontactvalidator])
+    # yaha change garna parxa haii.
+    contact = models.BigIntegerField(
+        validators=[iscontactvalidator],
+        blank=True,
+        null=True,
+    )
     gender = models.CharField(choices=GENDER_TYPE, max_length=20, blank=False)
     province = models.CharField(max_length=100, blank=False)
     district = models.CharField(max_length=100, blank=False)
