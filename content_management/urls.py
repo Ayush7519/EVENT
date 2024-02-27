@@ -40,4 +40,9 @@ urlpatterns = [
         views.Contetn_Manageent_ButtonListApiView.as_view(),
         name="path to search the content for the frontend",
     ),
+    path(
+        "iamge/upload/path/",
+        views.ImageUploadApiView.as_view(),
+        name="path to upload the image in the timymc",
+    ),
 ]

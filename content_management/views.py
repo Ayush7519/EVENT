@@ -1,3 +1,6 @@
+import os
+
+from django.conf import settings
 from django.shortcuts import render
 from rest_framework import generics, permissions, status
 from rest_framework.filters import SearchFilter
@@ -13,7 +16,40 @@ from .serializer import (
     Content_ManagementListSerializer,
     Content_ManagementSerializer,
     HeadingSerializer,
+    ImageUploaderSerializer,
 )
+
+
+# creating the view for the image uploader.
+class ImageUploadApiView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def post(self, request, format=None):
+        serializer = ImageUploaderSerializer(
+            data=request.data,
+            context={"user": request.user},
+        )
+        if serializer.is_valid(raise_exception=True):
+            uploaded_file = serializer.validated_data["file"]
+            print(uploaded_file)
+            # creating the path to save the image.
+            # file_path = "/media/CMS_Photos/" + uploaded_file.name
+            file_path = os.path.join(
+                settings.MEDIA_ROOT, "CMS_Photos", uploaded_file.name
+            )
+            # writing in the file.
+            with open(file_path, "wb+") as destination:
+                for chunk in uploaded_file.chunks():
+                    destination.write(chunk)
+            return Response(
+                {"url": file_path},
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 # heading
@@ -79,9 +115,7 @@ class Content_ManagementStatusListApiView(APIView, PageNumberPagination):
             return self.get_paginated_response(serializer.data)
 
         else:
-            return Response(
-                {"msg": "Check your status.That doesn't match our status"}
-            )
+            return Response({"msg": "Check your status.That doesn't match our status"})
 
 
 # content-management update.
