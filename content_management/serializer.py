@@ -1,3 +1,4 @@
+from django.utils.crypto import get_random_string
 from rest_framework import serializers
 
 from .models import Content_Management, Heading
@@ -43,7 +44,6 @@ class ImageUploaderSerializer(serializers.Serializer):
                 "Extension does not match. It should be of png, jpg, jpeg"
             )
         else:
-            data = "cms_data"
-            new_filename = f"{name}_{data}.{ext}"
+            new_filename = f"{name}_{get_random_string(length=3)}.{ext}"
             attrs["file"].name = new_filename
             return attrs

@@ -2,6 +2,7 @@ import os
 
 from django.conf import settings
 from django.shortcuts import render
+from django.utils.crypto import get_random_string
 from rest_framework import generics, permissions, status
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
@@ -32,8 +33,10 @@ class ImageUploadApiView(APIView):
         if serializer.is_valid(raise_exception=True):
             uploaded_file = serializer.validated_data["file"]
             print(uploaded_file)
+            # creating the random string to add to the filename.
+            # unique_filename = uploaded_file.name + "_" + get_random_string(length=3)
+            # print(unique_filename)
             # creating the path to save the image.
-            # file_path = "/media/CMS_Photos/" + uploaded_file.name
             file_path = os.path.join(
                 settings.MEDIA_ROOT, "CMS_Photos", uploaded_file.name
             )
