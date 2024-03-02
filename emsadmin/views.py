@@ -1,17 +1,29 @@
+from collections import Counter
 from datetime import datetime, timedelta
 
+import numpy as np
+import pandas as pd
 from rest_framework import generics, permissions, status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 from account.renders import UserRenderer
+from booking.models import Ticket
 from ems.pagination import MyPageNumberPagination
 from ems.permission import IsArtistUser
 
 from .models import Artist, Event, Sponser
-from .serializer import Event_Serializer, EventList_Serializer, Sponser_Serializer
+from .serializer import (
+    Event_Serializer,
+    EventList_Serializer,
+    RecommendedEvent_Serializer,
+    Sponser_Serializer,
+)
 
 
 # Sopnser
@@ -336,3 +348,77 @@ class LoginArtistEventDetailsApiView(generics.ListAPIView):
                 {"msg": "Oops! Now Data Found.!!!"},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+
+# event recommendation system view.
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def recommendation(request):
+    # helper function for the recommendation system.
+    def get_title_from_id(index):
+        return df[df.index == index]["id"].iloc[0]
+
+    def get_id_from_genres(genres):
+        # for genre in genres:
+        return df[df.genres == genres]["id"].index[0]
+
+    # read the csv file.
+    df = pd.read_csv("mycsv.csv")
+
+    # defining the feature for the RE.(like the colums.)
+    features = ["genres", "event_name"]
+
+    # this will remove the nan value and put blank value in that place.
+    for feature in features:
+        df[feature] = df[feature].fillna(" ")
+
+    # now we have to combine the features.
+    def combine_feature(row):
+        try:
+            return row["genres"]
+        except:
+            print("error", row)
+
+    # this method help to apply the above mtheod in all the data.
+    df["combined_feature"] = df.apply(combine_feature, axis=1)
+
+    # making the count matrix form the data.
+    cv = CountVectorizer()
+    count_matrix = cv.fit_transform(df["combined_feature"])
+
+    # computing the cosine similarities from the count matrix.
+    cosine_sim = cosine_similarity(count_matrix)
+
+    # getting the data of the login user in the site.
+    user_genre_list = []
+    user = request.user
+    user_ticket_data = Ticket.objects.filter(booked_by=user)
+    for details in user_ticket_data:
+        event_info = details.event
+        if event_info.genres is not None:
+            user_genre_list.append(event_info.genres)
+            counter = Counter(user_genre_list)
+            most_common_value = counter.most_common(1)[0][0]
+    print(most_common_value)
+    # user_booked_ticket_genres=['Melody']
+    user_booked_ticket_genres = most_common_value
+
+    # getting the index of the movie from the title.
+    movie_index = get_id_from_genres(user_booked_ticket_genres)
+    similar_event = list(enumerate(cosine_sim[movie_index]))
+
+    # now sorting the data in descending order.lambda show the second value for the list of the data.
+    sorted_event_list = sorted(similar_event, key=lambda x: x[0], reverse=True)
+    print(sorted_event_list)
+
+    # serializating the data.
+    serializer_data = []
+    for event in sorted_event_list:
+        event_id = get_title_from_id(event[0])
+        event_data = Event.objects.get(id=event_id)
+        serializer = RecommendedEvent_Serializer(event_data)
+        serializer_data.append(serializer.data)
+    return Response(
+        serializer_data,
+        status=status.HTTP_200_OK,
+    )

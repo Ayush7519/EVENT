@@ -52,3 +52,14 @@ class EventList_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = "__all__"
+
+
+# making the serializer for the recommended events.
+class RecommendedEvent_Serializer(serializers.ModelSerializer):
+    # artist=Artist_Serializer_Full_Details(many=True)
+    artist = serializers.StringRelatedField(many=True)
+    sponser = SponserList_Serializer(many=True)
+
+    class Meta:
+        model = Event
+        fields = "__all__"

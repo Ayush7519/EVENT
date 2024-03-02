@@ -81,5 +81,9 @@ urlpatterns = [
         views.EventDetailApiiView.as_view(),
         name="path to get the detail of the specific event with the help of id.",
     ),
-    # path("test/", views.test, name="testing"),
+    path(
+        "recommendation/event/",
+        views.recommendation,
+        name="path to get the recommendated event",
+    ),
 ]

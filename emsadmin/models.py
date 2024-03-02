@@ -1,3 +1,4 @@
+import csv
 import os
 from datetime import datetime, timedelta
 
@@ -84,6 +85,19 @@ def category_image_dir_path(instance, filename):
 
 # EVENT MODEL
 class Event(models.Model):
+    GENRES_TYPE = (
+        ("Pop", "Pop"),
+        ("Rock", "Rock"),
+        ("Melody", "Medoly"),
+        ("Hiphop/Rap", "Hiphop/Rap"),
+        ("Electronic/Dance", "Electronic/Dance"),
+        ("Intie/Alternative", "Intie/Alternative"),
+        ("R&B/Soul", "R&B/Soul"),
+        ("Country", "Country"),
+        ("Jazz", "Jazz"),
+        ("Classical", "Classical"),
+        ("Old/Ethic", "Old/Ethic"),
+    )
     photo = models.ImageField(
         upload_to=category_image_dir_path,
         blank=False,
@@ -112,10 +126,17 @@ class Event(models.Model):
         null=False,
         blank=False,
     )
+    genres = models.CharField(
+        max_length=1000,
+        blank=True,
+        null=True,
+        choices=GENRES_TYPE,
+    )
 
     # here we are over writing the save model for the notification model.
     def save(self, *args, **kwargs):
         # aafu vanda tala ko model bata import gare function vitrai garna parxa
+        from emsadmin.models import create_event_csv
         from notification.models import Notification
 
         # here we are checking if notification is present in the model or not.
@@ -152,6 +173,31 @@ class Event(models.Model):
                 send_on=updated_date,
             )
             notificaton_data.save()
+            create_event_csv()
 
     def __str__(self):
         return self.event_name
+
+
+def create_event_csv():
+    # defining the path to save the csv file.
+    csv_file_path = "/Users/aayush/csv/EVENT/mycsv.csv"
+    # fetching the required data for the re.
+    events = Event.objects.filter(event_completed=False)
+    # defining the header for the csv.
+    header = ["id", "event_name", "genres", "artist", "location", "event_completed"]
+    with open(csv_file_path, "w", newline="") as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(header)
+        for event in events:
+            # Write event data to CSV file
+            writer.writerow(
+                [
+                    event.id,
+                    event.event_name,
+                    event.genres,
+                    event.artist,
+                    event.location,
+                    event.event_completed,
+                ]
+            )

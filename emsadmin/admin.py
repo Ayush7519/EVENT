@@ -23,6 +23,7 @@ class EventAdmin(admin.ModelAdmin):
         "id",
         "photo",
         "event_name",
+        "genres",
         "date",
         "time",
         # "artist",
