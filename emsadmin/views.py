@@ -412,12 +412,16 @@ def recommendation(request):
     print(sorted_event_list)
 
     # serializating the data.
+    i = 1
     serializer_data = []
     for event in sorted_event_list:
         event_id = get_title_from_id(event[0])
         event_data = Event.objects.get(id=event_id)
         serializer = RecommendedEvent_Serializer(event_data)
         serializer_data.append(serializer.data)
+        i = i + 1
+        if i > 4:
+            break
     return Response(
         serializer_data,
         status=status.HTTP_200_OK,
