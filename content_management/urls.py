@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import RedirectView
 
 from content_management import views
 
@@ -43,6 +44,11 @@ urlpatterns = [
     path(
         "iamge/upload/path/",
         views.ImageUploadApiView.as_view(),
-        name="path to upload the image in the timymc",
+        name="path",
     ),
+    # path(
+    #     "media/<str:filename>/",
+    #     RedirectView.as_view(url="/media/{{filename}}", permanent=True),
+    #     name="image-detail",
+    # ),
 ]

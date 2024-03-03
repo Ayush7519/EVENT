@@ -2,6 +2,7 @@ import os
 
 from django.conf import settings
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.crypto import get_random_string
 from rest_framework import generics, permissions, status
 from rest_framework.filters import SearchFilter
@@ -33,9 +34,6 @@ class ImageUploadApiView(APIView):
         if serializer.is_valid(raise_exception=True):
             uploaded_file = serializer.validated_data["file"]
             print(uploaded_file)
-            # creating the random string to add to the filename.
-            # unique_filename = uploaded_file.name + "_" + get_random_string(length=3)
-            # print(unique_filename)
             # creating the path to save the image.
             file_path = os.path.join(
                 settings.MEDIA_ROOT, "CMS_Photos", uploaded_file.name
@@ -44,8 +42,15 @@ class ImageUploadApiView(APIView):
             with open(file_path, "wb+") as destination:
                 for chunk in uploaded_file.chunks():
                     destination.write(chunk)
+            # url = request.build_absolute_uri(
+            #     reverse("image-detail", kwargs={"filename": uploaded_file.name})
+            # )
+            url = request.build_absolute_uri(
+                settings.MEDIA_URL + "CMS_Photos/" + uploaded_file.name
+            )
+            print(url)
             return Response(
-                {"url": file_path},
+                {"url": url},
                 status=status.HTTP_201_CREATED,
             )
         else:
