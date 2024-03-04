@@ -390,6 +390,7 @@ def recommendation(request):
     cosine_sim = cosine_similarity(count_matrix)
 
     # getting the data of the login user in the site.
+    most_common_value = None
     user_genre_list = []
     user = request.user
     user_ticket_data = Ticket.objects.filter(booked_by=user)
@@ -399,7 +400,13 @@ def recommendation(request):
             user_genre_list.append(event_info.genres)
             counter = Counter(user_genre_list)
             most_common_value = counter.most_common(1)[0][0]
-    print(most_common_value)
+    # checking if there is recommendation event or not.
+    if most_common_value is None:
+        return Response(
+            {"message": "user hasnot booked any event so no recommend event!!!"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
     # user_booked_ticket_genres=['Melody']
     user_booked_ticket_genres = most_common_value
 

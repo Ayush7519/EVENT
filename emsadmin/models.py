@@ -181,7 +181,7 @@ class Event(models.Model):
 
 def create_event_csv():
     # defining the path to save the csv file.
-    csv_file_path = "/Users/aayush/csv/EVENT/mycsv.csv"
+    csv_file_path = "/Users/aayush/working file/EVENT/mycsv.csv"
     # fetching the required data for the re.
     events = Event.objects.filter(event_completed=False)
     # defining the header for the csv.
