@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from account.serializer import UserDetail_Serializer
+
 from .models import Artist, Event, Sponser
 
 
@@ -41,13 +43,23 @@ class SponserList_Serializer(serializers.ModelSerializer):
         fields = ("photo", "name", "sponser_type")
 
 
+# creating the artist serializer for the event list.
+class ArtistList_Serializer(serializers.ModelSerializer):
+    user = UserDetail_Serializer()
+
+    class Meta:
+        model = Artist
+        fields = ("user", "photo")
+        # depth = 1
+
+
 # creating serializer for the event list/detail view...
 class EventList_Serializer(serializers.ModelSerializer):
     # this done for converting the pimary key into string.
-    artist = serializers.StringRelatedField(many=True)
+    # artist = serializers.StringRelatedField(many=True)
+    artist = ArtistList_Serializer(many=True)
     # sponser = serializers.StringRelatedField(many=True)
     sponser = SponserList_Serializer(many=True)
-    # artist = EventListT_Serializer(many=True)
 
     class Meta:
         model = Event

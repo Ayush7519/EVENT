@@ -288,3 +288,12 @@ class NormalUserLoginProfileFull_Serializer(serializers.ModelSerializer):
     class Meta:
         model = NormalUser
         fields = "__all__"
+
+
+# user serializer for the event details.
+class UserDetail_Serializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            "name",
+        ]

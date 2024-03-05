@@ -87,10 +87,10 @@ class UserLoginView(APIView):
             password = serializer.data.get("password")
             user = authenticate(email=email, password=password)
             print(user)
-            user_type = user.is_admin
-            user_artist = user.is_artist
-            user_nrmuser = user.is_user
             if user is not None:
+                user_type = user.is_admin
+                user_artist = user.is_artist
+                user_nrmuser = user.is_user
                 token = get_tokens_for_user(user)
                 return Response(
                     {
