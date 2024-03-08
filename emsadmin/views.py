@@ -20,6 +20,7 @@ from ems.permission import IsArtistUser
 from .models import Artist, Event, Sponser
 from .serializer import (
     Event_Serializer,
+    EventList1_Serializer,
     EventList_Serializer,
     RecommendedEvent_Serializer,
     Sponser_Serializer,
@@ -165,7 +166,7 @@ class EventListUserApiView(generics.ListAPIView):
 
 # Event detail view for the frontend.
 class EventDetailApiiView(generics.ListAPIView):
-    serializer_class = EventList_Serializer
+    serializer_class = EventList1_Serializer
     renderer_classes = [UserRenderer]
 
     def get_queryset(self):
