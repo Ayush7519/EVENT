@@ -63,6 +63,8 @@ class TicketCreateApiView(generics.CreateAPIView):
                 print(rm_ticket)
                 event_data.remaining_capacity = rm_ticket
                 event_data.save()
+            # FROM THIS WE HAVE TO ADD THE ESEWA PAYMENT.
+
             serializer.save()
             # this should be done after the payment is sucessfully done.
             event_data.no_of_participant = event_data.no_of_participant + qtn
@@ -120,7 +122,7 @@ class UserBookedTicketApiView(generics.ListAPIView):
             )
 
 
-# graph data process.
+# Graph creating for the login artist.
 class GraphAPI(APIView):
     permission_classes = [IsArtistUser]
 
@@ -135,10 +137,12 @@ class GraphAPI(APIView):
             )
 
         today = datetime.now().date()
-        data_list = []  # List to store data for all months
+        monthly_participants = defaultdict(
+            int
+        )  # Dictionary to store aggregated data for all months
 
         for i in range(12):
-            end_day = today - relativedelta(months=i)  # aaja ko
+            end_day = today - relativedelta(months=i)
             onemonth = end_day - timedelta(days=30)
 
             artist_one_month_data = Event.objects.filter(
@@ -147,16 +151,22 @@ class GraphAPI(APIView):
                 date__lte=end_day,
             )
 
-            monthly_participants = defaultdict(int)
             for event in artist_one_month_data:
-                month_year = event.date.strftime("%B %Y")  # Format: Month Year
+                month_year = event.date.strftime("%B %Y")
                 monthly_participants[month_year] += event.no_of_participant
 
-            # Extract labels and values for the current month
-            labels = list(monthly_participants.keys())
-            values = list(monthly_participants.values())
-            data_list.append({"labels": labels, "values": values})
+        # Extract labels and values from the aggregated data
+        labels = list(monthly_participants.keys())
+        values = list(monthly_participants.values())
 
-        # Return the data for all months
+        # Sort labels and values based on date
+        sorted_indices = sorted(
+            range(len(labels)),
+            key=lambda i: datetime.strptime(labels[i], "%B %Y"),
+        )
+        sorted_labels = [labels[i] for i in sorted_indices]
+        sorted_values = [values[i] for i in sorted_indices]
+
+        data_list = [{"labels": sorted_labels, "values": sorted_values}]
 
         return Response(data_list)

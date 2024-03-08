@@ -19,6 +19,7 @@ schema_view = get_schema_view(
     public=True,
     permission_classes=(permissions.AllowAny,),
 )
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("account.urls")),
@@ -26,6 +27,7 @@ urlpatterns = [
     path("", include("emsadmin.urls")),
     path("", include("booking.urls")),
     path("", include("notification.urls")),
+    # path("", include("notification.routing")),
     # for the swagger documentations.
     path(
         "swagger/",

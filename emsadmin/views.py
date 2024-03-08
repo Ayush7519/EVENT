@@ -307,7 +307,7 @@ class LoginArtistEventDetailsApiView(generics.ListAPIView):
         next_day_current_date = current_date + timedelta(days=1)
         print(user_artist)
         if name == "all":
-            return Event.objects.filter(artist=user_artist)
+            return Event.objects.filter(artist=user_artist).order_by("-date")
         elif name == "complete":
             return Event.objects.filter(
                 artist=user_artist,
@@ -317,26 +317,25 @@ class LoginArtistEventDetailsApiView(generics.ListAPIView):
             return Event.objects.filter(
                 artist=user_artist,
                 event_completed=False,
-            )
+            ).order_by("-date")
         elif name == "today":
             return Event.objects.filter(
                 artist=user_artist,
                 date=current_date,
-            )
+            ).order_by("-date")
         elif name == "tomorrow":
             return Event.objects.filter(
                 artist=user_artist,
                 date=next_day_current_date,
-            )
+            ).order_by("-date")
         elif name == "upcome":
             return Event.objects.filter(
                 artist=user_artist,
                 date__gt=next_day_current_date,
-            ).order_by("date")
+            ).order_by("-date")
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        print(queryset)
         if queryset.exists():
             serializer = self.get_serializer(queryset, many=True)
             return Response(
