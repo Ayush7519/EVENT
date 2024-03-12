@@ -1,3 +1,4 @@
+import logging
 from collections import Counter
 from datetime import datetime, timedelta
 
@@ -16,6 +17,7 @@ from account.renders import UserRenderer
 from booking.models import Ticket
 from ems.pagination import MyPageNumberPagination
 from ems.permission import IsArtistUser
+from notification.models import Notification
 
 from .models import Artist, Event, Sponser
 from .serializer import (
@@ -164,6 +166,9 @@ class EventListUserApiView(generics.ListAPIView):
         return Event.objects.filter(event_completed=False)
 
 
+logger = logging.getLogger(__name__)
+
+
 # Event detail view for the frontend.
 class EventDetailApiiView(generics.ListAPIView):
     serializer_class = EventList1_Serializer
@@ -180,6 +185,7 @@ class EventDetailApiiView(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
+
         if queryset.exists():
             serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
