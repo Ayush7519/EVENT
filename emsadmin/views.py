@@ -166,9 +166,6 @@ class EventListUserApiView(generics.ListAPIView):
         return Event.objects.filter(event_completed=False)
 
 
-logger = logging.getLogger(__name__)
-
-
 # Event detail view for the frontend.
 class EventDetailApiiView(generics.ListAPIView):
     serializer_class = EventList1_Serializer
@@ -199,16 +196,16 @@ class EventDetailApiiView(generics.ListAPIView):
 # Event Search.
 # this is for the front end user so they can search the event based on their desire.
 class EventSearchApiView(generics.ListAPIView):
-    queryset = Event.objects.all().order_by("-date", "-time")
+    queryset = Event.objects.all().order_by("-id")
     serializer_class = EventList_Serializer
     filter_backends = [SearchFilter]
     search_fields = [
         "event_name",
-        "date",
-        "time",
+        # "date",
+        # "time",
         "artist__user__name",
         "artist__user__username",
-        "location",
+        # "location",
     ]
     pagination_class = MyPageNumberPagination
 

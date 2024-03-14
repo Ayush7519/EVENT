@@ -46,9 +46,34 @@ urlpatterns = [
         views.ImageUploadApiView.as_view(),
         name="path",
     ),
-    # path(
-    #     "media/<str:filename>/",
-    #     RedirectView.as_view(url="/media/{{filename}}", permanent=True),
-    #     name="image-detail",
-    # ),
+    path(
+        "blog/image/upload/",
+        views.BlogImageUploadApiView.as_view(),
+        name="path to upload the image in the blog tinymc",
+    ),
+    path(
+        "blog/create/",
+        views.BlogCreateApiView.as_view(),
+        name="path to create the blog",
+    ),
+    path(
+        "blog/list/",
+        views.BlogListApiView.as_view(),
+        name="path to see all the blogs",
+    ),
+    path(
+        "blog/search/",
+        views.BlogSearchApiView.as_view(),
+        name="path to search the blog in the frontens and in the admin pannel",
+    ),
+    path(
+        "blog/update/<int:pk>/",
+        views.BlogUpdateApiView.as_view(),
+        name="path to update the blog content",
+    ),
+    path(
+        "blog/delete/<int:pk>/",
+        views.BlogDeleteApiView.as_view(),
+        name="path to delete the blog content",
+    ),
 ]

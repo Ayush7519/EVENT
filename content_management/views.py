@@ -13,8 +13,9 @@ from rest_framework.views import APIView
 from account.renders import UserRenderer
 from ems.pagination import MyPageNumberPagination
 
-from .models import Content_Management, Heading
+from .models import Blog, Content_Management, Heading
 from .serializer import (
+    BlogSerializer,
     Content_ManagementListSerializer,
     Content_ManagementSerializer,
     HeadingSerializer,
@@ -42,9 +43,7 @@ class ImageUploadApiView(APIView):
             with open(file_path, "wb+") as destination:
                 for chunk in uploaded_file.chunks():
                     destination.write(chunk)
-            # url = request.build_absolute_uri(
-            #     reverse("image-detail", kwargs={"filename": uploaded_file.name})
-            # )
+
             url = request.build_absolute_uri(
                 settings.MEDIA_URL + "CMS_Photos/" + uploaded_file.name
             )
@@ -164,3 +163,115 @@ class Contetn_Manageent_ButtonListApiView(APIView):
             serializer.data,
             status=status.HTTP_200_OK,
         )
+
+
+# View For The Blog.
+# this is for the tinymc for the blog part.
+class BlogImageUploadApiView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def post(self, request, format=None):
+        serializer = ImageUploaderSerializer(
+            data=request.data,
+            context={"user": request.user},
+        )
+        if serializer.is_valid(raise_exception=True):
+            uploaded_file = serializer.validated_data["file"]
+            print(uploaded_file)
+            # creating the path to save the image.
+            file_path = os.path.join(
+                settings.MEDIA_ROOT, "Blog_Photos", uploaded_file.name
+            )
+            # writing in the file.
+            with open(file_path, "wb+") as destination:
+                for chunk in uploaded_file.chunks():
+                    destination.write(chunk)
+
+            url = request.build_absolute_uri(
+                settings.MEDIA_URL + "Blog_Photos/" + uploaded_file.name
+            )
+            print(url)
+            return Response(
+                {"url": url},
+                status=status.HTTP_201_CREATED,
+            )
+        else:
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+# blog created view.
+class BlogCreateApiView(APIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [permissions.IsAdminUser]
+
+    def post(self, request, *args, **kwargs):
+        serializer = BlogSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            user = request.user
+            data = "Null"
+            print(user)
+            serializer.validated_data["created_by"] = user
+            serializer.validated_data["updated_by"] = data
+            serializer.save()
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+# blog list. tis give the full list of the blog.
+class BlogListApiView(generics.ListAPIView):
+    queryset = Blog.objects.all().order_by("-date_created")
+    serializer_class = BlogSerializer
+
+
+# blog search.
+class BlogSearchApiView(generics.ListAPIView):
+    queryset = Blog.objects.all()
+    serializer_class = BlogSerializer
+    filter_backends = [SearchFilter]
+    search_fields = ["^created_by"]
+
+
+# blog update
+class BlogUpdateApiView(APIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [permissions.IsAdminUser]
+
+    def put(self, request, pk, *args, **kwargs):
+        try:
+            blog_data = Blog.objects.get(id=pk)
+        except Blog.DoesNotExist:
+            return Response(
+                {"msg": f"Blog with the id {pk} is not available"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        serializer = BlogSerializer(blog_data, data=request.data)
+        if serializer.is_valid():
+            user = request.user.name
+            print(user)
+            serializer.validated_data["updated_by"] = user
+            serializer.save()
+            return Response(
+                serializer.data,
+                headers={"msg": "Data is updated"},
+            )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+# blog delete.
+class BlogDeleteApiView(generics.DestroyAPIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [permissions.IsAdminUser]
+    queryset = Blog.objects.all()
+    serializer_class = BlogSerializer

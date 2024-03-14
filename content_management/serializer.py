@@ -1,7 +1,7 @@
 from django.utils.crypto import get_random_string
 from rest_framework import serializers
 
-from .models import Content_Management, Heading
+from .models import Blog, Content_Management, Heading
 
 
 # Content_management
@@ -47,3 +47,11 @@ class ImageUploaderSerializer(serializers.Serializer):
             new_filename = f"{name}_{get_random_string(length=3)}.{ext}"
             attrs["file"].name = new_filename
             return attrs
+
+
+# For the blog
+# serializer for the blog create.
+class BlogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Blog
+        fields = "__all__"
