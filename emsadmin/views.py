@@ -13,7 +13,9 @@ from rest_framework.views import APIView
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+from account.models import User
 from account.renders import UserRenderer
+from account.utils import Util
 from booking.models import Ticket
 from ems.pagination import MyPageNumberPagination
 from ems.permission import IsArtistUser
@@ -24,6 +26,7 @@ from .serializer import (
     Event_Serializer,
     EventList1_Serializer,
     EventList_Serializer,
+    EventRequest_Serializer,
     RecommendedEvent_Serializer,
     Sponser_Serializer,
 )
@@ -78,12 +81,11 @@ class EventCreateApiView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = Event_Serializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
+            user = request.user
             artist_value = serializer.validated_data["artist"]
             capacity = serializer.validated_data["capacity"]
             serializer.validated_data["remaining_capacity"] = capacity
-            print(artist_value)
             for art_data in artist_value:
-                print(art_data)
                 try:
                     data = Artist.objects.get(user_id=art_data.user_id)
                     data.is_available = False
@@ -95,58 +97,76 @@ class EventCreateApiView(generics.CreateAPIView):
                         },
                         status=status.HTTP_404_NOT_FOUND,
                     )
-            serializer.save()
+
+                if user.is_admin == True:
+                    serializer.validated_data["status"] = "Accept"
+                    serializer.save()
+                else:
+                    serializer.validated_data["status"] = "Request"
+                    # taking out the emails of the admins.
+                    user_amin = User.objects.filter(is_admin=True)
+                    for users in user_amin:
+                        to_email = users.email
+                        data = {
+                            "subject": "New Event Request!!!",
+                            "body": "New Event request is send the the artist. Please check it to accept the request",
+                            "to_email": to_email,
+                        }
+                        Util.send_email(data)
+                    serializer.save()
+
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED,
             )
 
 
-# Event Complete.
-class EventCompleteApiView(APIView):
-    renderer_classes = [UserRenderer]
+# # Event Complete.
+# class EventCompleteApiView(APIView):
+#     renderer_classes = [UserRenderer]
+#     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, event_id, *args, **kwargs):
-        print(event_id)
-        try:
-            event_info = Event.objects.get(id=event_id)
-            print(event_info)
-            artists_ids = [artist.id for artist in event_info.artist.all()]
+#     def post(self, request, event_id, *args, **kwargs):
+#         print(event_id)
+#         try:
+#             event_info = Event.objects.get(id=event_id)
+#             print(event_info)
+#             artists_ids = [artist.id for artist in event_info.artist.all()]
 
-        except Event.DoesNotExist:
-            return Response(
-                {"msg": "Event Doesnot Exists"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+#         except Event.DoesNotExist:
+#             return Response(
+#                 {"msg": "Event Doesnot Exists"},
+#                 status=status.HTTP_404_NOT_FOUND,
+#             )
 
-        for art_id in artists_ids:
-            # print(art_id)
-            try:
-                artist_info = Artist.objects.get(id=art_id)
-                current_date = datetime.now()
-                artist_data = Event.objects.filter(
-                    artist=artist_info,
-                    date__gt=current_date,
-                ).exists()
-                if artist_data:
-                    artist_info.is_available = False
-                else:
-                    artist_info.is_available = True
-                artist_info.save()
+#         for art_id in artists_ids:
+#             # print(art_id)
+#             try:
+#                 artist_info = Artist.objects.get(id=art_id)
+#                 current_date = datetime.now()
+#                 artist_data = Event.objects.filter(
+#                     artist=artist_info,
+#                     date__gt=current_date,
+#                 ).exists()
+#                 if artist_data:
+#                     artist_info.is_available = False
+#                 else:
+#                     artist_info.is_available = True
+#                 artist_info.save()
 
-            except Artist.DoesNotExist:
-                return Response(
-                    {"msg": "Artist Not Found"},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
+#             except Artist.DoesNotExist:
+#                 return Response(
+#                     {"msg": "Artist Not Found"},
+#                     status=status.HTTP_404_NOT_FOUND,
+#                 )
 
-        event_info.event_completed = True
-        event_info.save()
+#         event_info.event_completed = True
+#         event_info.save()
 
-        return Response(
-            {"msg": "Operation Sucessfully Completed."},
-            status=status.HTTP_200_OK,
-        )
+#         return Response(
+#             {"msg": "Operation Sucessfully Completed."},
+#             status=status.HTTP_200_OK,
+#         )
 
 
 # Event List.(for the admin site.)
@@ -163,7 +183,7 @@ class EventListUserApiView(generics.ListAPIView):
     renderer_classes = [UserRenderer]
 
     def get_queryset(self):
-        return Event.objects.filter(event_completed=False)
+        return Event.objects.filter(event_completed=False, status="Accept")
 
 
 # Event detail view for the frontend.
@@ -353,6 +373,70 @@ class LoginArtistEventDetailsApiView(generics.ListAPIView):
             )
 
 
+# event request for the admin.
+class EventRequestApiView(generics.ListAPIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [permissions.IsAdminUser]
+    serializer_class = EventRequest_Serializer
+
+    def get_queryset(self):
+        return Event.objects.filter(status="Request")
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if queryset.exists():
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {"msg": "No evetns at the request"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+
+# accept and decline view.
+class EventAcceptAndDeclineApiView(APIView):
+    renderer_classes = [UserRenderer]
+    permission_classes = [permissions.IsAdminUser]
+
+    def post(self, request, id, request_type, *args, **kwargs):
+        try:
+            event_data = Event.objects.get(id=id)
+        except Event.DoesNotExist:
+            return Response(
+                {"msg": f"The event with the id {id} doesnt exists"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if request_type == "accept":
+            event_data.status = "Accept"
+            for artist in event_data.artist.all():
+                data = {
+                    "subject": "Event Request Accepted",
+                    "body": "Congratulations! Your event has been accepted on our website. We look forward to your continued engagement with our platform.",
+                    "to_email": artist.user.email,
+                }
+                Util.send_email(data)
+                event_data.save()
+        elif request_type == "decline":
+            for artist in event_data.artist.all():
+                data = {
+                    "subject": "Event Request Rejected",
+                    "body": "We regret to inform you that your event request has been rejected on our website. We encourage you to review our guidelines and consider reapplying in the future.",
+                    "to_email": artist.user.email,
+                }
+                Util.send_email(data)
+                event_data.delete()
+
+        return Response(
+            {"msg": "Operation is sucessfully done"},
+            status=status.HTTP_200_OK,
+        )
+
+
 # event recommendation system view.
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
@@ -419,7 +503,7 @@ def recommendation(request):
 
     # now sorting the data in descending order.lambda show the second value for the list of the data.
     sorted_event_list = sorted(similar_event, key=lambda x: x[0], reverse=True)
-    print(sorted_event_list)
+    # print(sorted_event_list)
 
     # serializating the data.
     i = 1

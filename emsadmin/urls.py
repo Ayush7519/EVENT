@@ -36,11 +36,11 @@ urlpatterns = [
         views.EventCreateApiView.as_view(),
         name="event creating path",
     ),
-    path(
-        "event/complete/<int:event_id>/",
-        views.EventCompleteApiView.as_view(),
-        name="event complete path to change the event data automatically",
-    ),
+    # path(
+    #     "event/complete/<int:event_id>/",
+    #     views.EventCompleteApiView.as_view(),
+    #     name="event complete path to change the event data automatically",
+    # ),
     path(
         "event/list/",
         views.EventListApiView.as_view(),
@@ -85,5 +85,15 @@ urlpatterns = [
         "recommendation/event/",
         views.recommendation,
         name="path to get the recommendated event",
+    ),
+    path(
+        "event/request/",
+        views.EventRequestApiView.as_view(),
+        name="path to see the request evetn in the admin pannel",
+    ),
+    path(
+        "event/result/<int:id>/<str:request_type>/",
+        views.EventAcceptAndDeclineApiView.as_view(),
+        name="path to accept and decline the event by the admin",
     ),
 ]

@@ -98,6 +98,10 @@ class Event(models.Model):
         ("Classical", "Classical"),
         ("Old/Ethic", "Old/Ethic"),
     )
+    STATUS_TYPE = (
+        ("Accept", "Accept"),
+        ("Request", "Request"),
+    )
     photo = models.ImageField(
         upload_to=category_image_dir_path,
         blank=False,
@@ -131,6 +135,12 @@ class Event(models.Model):
         blank=True,
         null=True,
         choices=GENRES_TYPE,
+    )
+    status = models.CharField(
+        max_length=10,
+        null=True,
+        blank=True,
+        choices=STATUS_TYPE,
     )
 
     # here we are over writing the save model for the notification model.

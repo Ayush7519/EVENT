@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from account.serializer import UserDetail_Serializer
+from account.serializer import ArtistLoginProfileFull_Serializer, UserDetail_Serializer
 
 from .models import Artist, Event, Sponser
 
@@ -80,6 +80,16 @@ class EventList1_Serializer(serializers.ModelSerializer):
 class RecommendedEvent_Serializer(serializers.ModelSerializer):
     # artist=Artist_Serializer_Full_Details(many=True)
     artist = serializers.StringRelatedField(many=True)
+    sponser = SponserList_Serializer(many=True)
+
+    class Meta:
+        model = Event
+        fields = "__all__"
+
+
+# serializer for the request event.
+class EventRequest_Serializer(serializers.ModelSerializer):
+    artist = ArtistLoginProfileFull_Serializer(many=True)
     sponser = SponserList_Serializer(many=True)
 
     class Meta:

@@ -34,6 +34,7 @@ class EventAdmin(admin.ModelAdmin):
         # "sponser",
         "event_completed",
         "no_of_participant",
+        "status",
     )
 
 
