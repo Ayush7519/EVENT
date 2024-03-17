@@ -170,3 +170,61 @@ class GraphAPI(APIView):
         data_list = [{"labels": sorted_labels, "values": sorted_values}]
 
         return Response(data_list)
+
+
+import json
+
+# trying the khalti for the payment.
+import requests
+from django.http import JsonResponse
+from django.shortcuts import redirect
+from django.urls import reverse
+from rest_framework.decorators import api_view, permission_classes
+
+
+@api_view(["POST"])
+def initiate_payment(request):
+    url = "https://a.khalti.com/api/v2/epayment/initiate/"
+    return_url = request.POST.get("return_url")
+    print(return_url)
+    purchase_order_id = request.POST.get("purchase_order_id")
+    print(purchase_order_id)
+    amount = request.POST.get("amount")
+    print(amount)
+    payload = json.dumps(
+        {
+            "return_url": return_url,
+            "website_url": "http://localhost:3000/page/1",
+            "amount": amount,
+            "purchase_order_id": purchase_order_id,
+            "purchase_order_name": "test",
+            # this my be dynamic when the front end is conected.
+            "customer_info": {
+                "name": "Ayush Kandel",
+                "email": "ayushkandel7519@gmail.com",
+                "phone": "9800000001",
+            },
+        }
+    )
+    headers = {
+        "Authorization": "key 77e1305ba1704cd49000f502eb653960",
+        "Content-Type": "application/json",
+    }
+    print(headers)
+    response = requests.request("POST", url, headers=headers, data=payload)
+
+    print(response.text)
+    new_response = json.loads(response.text)
+    print("this is the response converted into the python form", new_response)
+    return Response(response.text)
+
+    # if response.status_code == 200:
+    #     new_response = json.loads(response.text)
+    #     payment_url = new_response.get('payment_url')
+    #     if payment_url:
+    #         print(payment_url)
+    #         return redirect(payment_url)
+    #     else:
+    #         return JsonResponse({'error': 'Payment URL not found in response'})
+    # else:
+    #     return JsonResponse({'error': 'Failed to initiate payment', 'details': response.text}, status=response.status_code)

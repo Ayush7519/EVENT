@@ -210,7 +210,7 @@ class BlogCreateApiView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = BlogSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            user = request.user
+            user = request.user.username
             data = "Null"
             print(user)
             serializer.validated_data["created_by"] = user
@@ -255,7 +255,7 @@ class BlogUpdateApiView(APIView):
             )
         serializer = BlogSerializer(blog_data, data=request.data)
         if serializer.is_valid():
-            user = request.user.name
+            user = request.user.username
             print(user)
             serializer.validated_data["updated_by"] = user
             serializer.save()
@@ -275,3 +275,10 @@ class BlogDeleteApiView(generics.DestroyAPIView):
     permission_classes = [permissions.IsAdminUser]
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
+
+
+# blog detail view for the user.
+class BlogDetailApiView(generics.RetrieveAPIView):
+    queryset = Blog.objects.all()
+    serializer_class = BlogSerializer
+    renderer_classes = [UserRenderer]

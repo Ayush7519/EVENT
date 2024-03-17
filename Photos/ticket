@@ -217,23 +217,23 @@ html {
 			</p>
 			<div class="ticket-number">
 				<p>
-					#TKT20240306165021243637
+					#TKT20240317203747195054
 				</p>
 			</div>
 		</div>
 
 		<div class="ticket-info">
 			<p class="date">
-				<span>7:39 p.m.</span>
+				<span>6 p.m.</span>
 				<span class="june-29">March 29, 2024</span>
-				<span>Quantity: 3</span>
+				<span>Quantity: 1</span>
 			</p>
 			<div class="show-name">
-				<h1>The Greate Progrmadfsdfsdfsdfsdfdsf</h1>
+				<h1>This is the best ever musice festa in the town</h1>
 			</div>
 			<div class="time">
 				<p>Artists: account.Artist.None</p>
-				<p>Customer Name: Abc</p>
+				<p>Customer Name: admin</p>
 			</div>
 			<p class="location"><span>@AB Events</span>
 				<span class="separator"><i class="far fa-smile"></i></span><span>Bharatpur, Nepal</span>
@@ -244,7 +244,7 @@ html {
 		<div class="right-info-container">
 			
 			<div class="time">
-				<span>7:39 p.m.</span>
+				<span>6 p.m.</span>
 				<span>March 29, 2024</span>
 			</div>
 			<div class="barcode">

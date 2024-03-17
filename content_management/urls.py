@@ -76,4 +76,9 @@ urlpatterns = [
         views.BlogDeleteApiView.as_view(),
         name="path to delete the blog content",
     ),
+    path(
+        "blog/detail/<int:pk>/",
+        views.BlogDetailApiView.as_view(),
+        name="path to see the deatail of the blog",
+    ),
 ]

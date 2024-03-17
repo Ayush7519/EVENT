@@ -13,5 +13,14 @@ urlpatterns = [
         views.UserBookedTicketApiView.as_view(),
         name="path to get the list of ticket booked by the normal user in their profile.",
     ),
-    path("grpah/", views.GraphAPI.as_view()),
+    path(
+        "grpah/",
+        views.GraphAPI.as_view(),
+        name="path to see the graph of the login user",
+    ),
+    path(
+        "payments/",
+        views.initiate_payment,
+        name="payment",
+    ),
 ]
