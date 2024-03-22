@@ -24,7 +24,7 @@ class UserRegistration_Serializer(serializers.ModelSerializer):
         password2 = attrs.get("password2")
         if password != password2:
             raise serializers.ValidationError(
-                "Password and conform password doesnot match "
+                "Oops! It seems like the passwords don't match. Please double-check and try again."
             )
         return super().validate(attrs)
 
@@ -60,18 +60,24 @@ class UserPasswordChange_Serializer(serializers.ModelSerializer):
         user = self.context.get("user")
         if password != password2:
             raise serializers.ValidationError(
-                {"msg": "Password and Confirm password doesnot matches..."}
+                {
+                    "msg": "Oops! The passwords you entered don't match. Please try again."
+                }
             )
         user.set_password(password)
         user.save()
         # email send after the password is changed.
         data = {
-            "subject": "Django Mail",
-            "body": "Hii"
-            + " "
-            + user.name
-            + " "
-            + "Your Password Has Been Changed !!!",
+            "subject": "Password Change Notification",
+            "body": f"Hi {user.name},\n\n"
+            "We wanted to inform you that your password has been successfully updated on our platform. "
+            "Your account security is our top priority, and we appreciate your diligence in keeping your "
+            "information secure.\n\n"
+            "If you did not authorize this change or have any concerns about your account security, "
+            "please contact our support team immediately.\n\n"
+            "Thank you for choosing our service!\n\n"
+            "Best regards,\n"
+            "The [Your Website Name] Team",
             "to_email": user.email,
         }
         Util.send_email(data)
@@ -97,16 +103,23 @@ class SendPasswordEmail_Serializer(serializers.ModelSerializer):
             link = "http://127.0.0.1:3000/user/reset/" + uid + "/" + token
             print(link)
             # sending the mail to the user to change the password
-            body = "Click the following link to change the password" + link
+            body = (
+                "Hello there,\n\n"
+                "You've requested to reset your password. To proceed, please click on the link below:\n\n"
+                f"{link}\n\n"
+                "If you didn't request this, you can safely ignore this email.\n\n"
+                "Best regards,\n"
+                "The [AB Events] Team"
+            )
             data = {
-                "subject": "Rest Your Password",
+                "subject": "Password Reset Request",
                 "body": body,
                 "to_email": user.email,
             }
             Util.send_email(data)
             return attrs
         else:
-            raise serializers.ValidationError("Your Email not found")
+            raise serializers.ValidationError("Oops! We couldn't find your email.")
 
 
 # user password change serializer through the mail.
@@ -130,18 +143,25 @@ class UserPasswordReset_Serializer(serializers.ModelSerializer):
             token = self.context.get("token")
             if password != password2:
                 raise serializers.ValidationError(
-                    "Password and Conform Password doesnot matches"
+                    "Oops! Your password confirmation doesn't match. Please double-check and try again."
                 )
             id = smart_str(urlsafe_base64_decode(uid))
             user = User.objects.get(id=id)
             if not PasswordResetTokenGenerator().check_token(user, token):
-                raise serializers.ValidationError("Token is not valid or Expired")
+                raise serializers.ValidationError(
+                    "Oops! Looks like something went wrong. Please refresh the page and try again. If the issue persists, please contact support for assistance."
+                )
             user.set_password(password)
             user.save()
             return attrs
         except DjangoUnicodeDecodeError as identifier:
             PasswordResetTokenGenerator().check_token(user, token)
-            raise serializers.ValidationError("Token is not valid or Expired")
+            raise serializers.ValidationError(
+                "Oops! It looks like there's an issue with your token. "
+                "It may be invalid or expired. Please double-check your token "
+                "and try again. If you continue to experience issues, "
+                "please contact our support team for assistance."
+            )
 
 
 # ARTIST

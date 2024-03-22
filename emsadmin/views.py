@@ -26,6 +26,7 @@ from .serializer import (
     Event_Serializer,
     EventList1_Serializer,
     EventList_Serializer,
+    EventListT_Serializer,
     EventRequest_Serializer,
     RecommendedEvent_Serializer,
     Sponser_Serializer,
@@ -179,8 +180,9 @@ class EventListApiView(generics.ListAPIView):
 
 # Event list for the user to show.
 class EventListUserApiView(generics.ListAPIView):
-    serializer_class = EventList_Serializer
+    serializer_class = EventListT_Serializer
     renderer_classes = [UserRenderer]
+    pagination_class = MyPageNumberPagination
 
     def get_queryset(self):
         return Event.objects.filter(event_completed=False, status="Accept")

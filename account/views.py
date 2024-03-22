@@ -58,12 +58,18 @@ class UserRegistrationView(APIView):
             uid = user.id
             # email sending after the user is registred and saved.
             data = {
-                "subject": "Django Email",
-                "body": user.name
-                + " "
-                + "You have been successfully registred in our Site !!!",
+                "subject": "Welcome to Our Community!",
+                "body": f"Dear {user.name},\n\n"
+                "Congratulations! You've successfully registered on our platform.\n\n"
+                "We're thrilled to have you join our community.\n\n"
+                "Stay tuned for exciting updates, exclusive offers, and valuable content.\n\n"
+                "If you have any questions or need assistance, feel free to reach out to us.\n\n"
+                "Welcome aboard, and thank you for choosing us!\n\n"
+                "Best regards,\n"
+                "The AB Events Team",
                 "to_email": user.email,
             }
+
             Util.send_email(data)
             token = get_tokens_for_user(user)  # for the token...
             return Response(

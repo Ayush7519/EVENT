@@ -6,6 +6,7 @@ from django.db import models
 from rest_framework import serializers
 
 from account.models import Artist
+from ems.settings import BASE_DIR
 from ems.validations import isalphanumericalvalidator, isalphavalidator
 
 
@@ -145,53 +146,68 @@ class Event(models.Model):
 
     # here we are over writing the save model for the notification model.
     def save(self, *args, **kwargs):
+        # checking wheather the event is created or updated.
+        if not self.pk:
+            if self.status == "Accept":
+                super().save(*args, **kwargs)
+                self._create_notification()
+            else:
+                super().save(*args, **kwargs)
+
+        # checking wheather the event is updated.
+        else:
+            old_event = Event.objects.filter(pk=self.pk).first()
+            if old_event.status != self.status and self.status == "Accept":
+                super().save(*args, **kwargs)
+                self._create_notification()
+            else:
+                super().save(*args, **kwargs)
+
+    # helper for the notification create.
+    def _create_notification(self):
         # aafu vanda tala ko model bata import gare function vitrai garna parxa
         from emsadmin.models import create_event_csv
         from notification.models import Notification
 
-        # here we are checking if notification is present in the model or not.
-        notification_instance = Notification.objects.filter(event=self).first()
-        super(Event, self).save(*args, **kwargs)
+        # message = (
+        #     "New event created"
+        #     + self.event_name
+        #     + " on "
+        #     + str(self.date)
+        #     + " at "
+        #     + str(self.time)
+        #     + "."
+        # )
+        message = (
+            "🎉 Exciting News! 🎉\n\n"
+            "We're thrilled to announce a new event:\n\n"
+            f"🌟 Event Name: {self.event_name}\n"
+            f"🗓 Date: {self.date.strftime('%B %d, %Y')}\n"
+            f"⏰ Time: {self.time.strftime('%I:%M %p')}\n\n"
+            "Join us for an unforgettable experience!\n\n"
+            "See you there! 🎶"
+        )
 
-        if notification_instance:
-            print("yes")
-            # Update fields of the existing Notification
-            notification_instance.event = self
-            # ... update other fields as needed
-            notification_instance.save()
-        else:
-            # here we make the message to send through the channle
-            message = (
-                "Here we go new event alert!!!"
-                + " "
-                + self.event_name
-                + " "
-                + "on"
-                + " "
-                + str(self.date)
-                + " "
-                + "at"
-                + " "
-                + str(self.time)
-                + "."
-            )
-            current_date_time = datetime.now()
-            updated_date = current_date_time + timedelta(minutes=1)
-            notificaton_data = Notification(
-                event=self,
-                message=message,
-                send_on=updated_date,
-            )
-            notificaton_data.save()
-            create_event_csv()
+        current_date_time = datetime.now()
+        updated_date = current_date_time + timedelta(minutes=1)
+        notification_data = Notification(
+            event=self,
+            message=message,
+            send_on=updated_date,
+        )
+        notification_data.save()
+        create_event_csv()
 
     def __str__(self):
         return self.event_name
 
 
 def create_event_csv():
+    path = os.path.join(BASE_DIR, "mycsv.csv")
+    print(path)
     # defining the path to save the csv file.
-    csv_file_path = "/Users/aayush/working file/EVENT/mycsv.csv"
+    # csv_file_path = "/Users/aayush/working file/EVENT/mycsv.csv"
+    csv_file_path = path
     # fetching the required data for the re.
     events = Event.objects.filter(event_completed=False)
     # defining the header for the csv.
