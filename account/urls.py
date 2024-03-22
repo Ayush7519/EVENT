@@ -88,6 +88,11 @@ urlpatterns = [
         views.ArtistDeleteView.as_view(),
         name="artist delete path",
     ),
+    path(
+        "artist/double/search/",
+        views.ArtistDoubleSearch.as_view(),
+        name="path to search the event based on the two fields",
+    ),
     # NORMAL USER PATHS.
     path(
         "normal-user/create/",

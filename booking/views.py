@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from dateutil.relativedelta import relativedelta
 from django.db.models import Sum
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from rest_framework import generics, permissions, status
@@ -185,11 +186,11 @@ from rest_framework.decorators import api_view, permission_classes
 @api_view(["POST"])
 def initiate_payment(request):
     url = "https://a.khalti.com/api/v2/epayment/initiate/"
-    return_url = request.POST.get("return_url")
+    return_url = request.data.get("return_url")
     print(return_url)
-    purchase_order_id = request.POST.get("purchase_order_id")
+    purchase_order_id = request.data.get("purchase_order_id")
     print(purchase_order_id)
-    amount = request.POST.get("amount")
+    amount = request.data.get("amount")
     print(amount)
     payload = json.dumps(
         {
@@ -216,15 +217,31 @@ def initiate_payment(request):
     print(response.text)
     new_response = json.loads(response.text)
     print("this is the response converted into the python form", new_response)
-    return Response(response.text)
+    # return Response(response.text)
 
     # if response.status_code == 200:
     #     new_response = json.loads(response.text)
-    #     payment_url = new_response.get('payment_url')
+    #     payment_url = new_response.get("payment_url")
     #     if payment_url:
     #         print(payment_url)
-    #         return redirect(payment_url)
+    #         return HttpResponseRedirect(redirect_to=payment_url)
     #     else:
-    #         return JsonResponse({'error': 'Payment URL not found in response'})
+    #         return JsonResponse({"error": "Payment URL not found in response"})
     # else:
-    #     return JsonResponse({'error': 'Failed to initiate payment', 'details': response.text}, status=response.status_code)
+    #     return JsonResponse(
+    #         {"error": "Failed to initiate payment", "details": response.text},
+    #         status=response.status_code,
+    #     )
+    if response.status_code == 200:
+        new_response = json.loads(response.text)
+        payment_url = new_response.get("payment_url")
+        if payment_url:
+            print(payment_url)
+            return JsonResponse({"payment_url": payment_url})
+        else:
+            return JsonResponse({"error": "Payment URL not found in response"})
+    else:
+        return JsonResponse(
+            {"error": "Failed to initiate payment", "details": response.text},
+            status=response.status_code,
+        )

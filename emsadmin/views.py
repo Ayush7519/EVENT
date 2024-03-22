@@ -13,7 +13,7 @@ from rest_framework.views import APIView
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from account.models import User
+from account.models import Artist, User
 from account.renders import UserRenderer
 from account.utils import Util
 from booking.models import Ticket

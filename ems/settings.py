@@ -189,6 +189,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3000",
     "https://api.rgsw.com.np",
+    "https://test-pay.khalti.com",
 ]
 
 # # To disable the browserable api.
@@ -219,6 +220,3 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
-
-print(BASE_DIR)

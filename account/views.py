@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.db.models import Q
 from django.shortcuts import render
 from django.utils.encoding import DjangoUnicodeDecodeError, force_bytes, smart_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -388,6 +389,34 @@ class ArtistDeleteView(generics.DestroyAPIView):
     serializer_class = Artist_Serializer
     permission_classes = [permissions.IsAuthenticated]
     renderer_classes = [UserRenderer]
+
+
+# artist search based on the two fields.
+class ArtistDoubleSearch(generics.ListAPIView):
+    renderer_classes = [UserRenderer]
+    serializer_class = Artist_Serializer_Full_Details
+    # permission_classes = [permissions.IsAdminUser]
+
+    def get_queryset(self):
+        type_of_the_performer_value = self.request.query_params.get(
+            "type_of_the_performer",
+            None,
+        )
+        performed_in_value = self.request.query_params.get(
+            "performed_in",
+            None,
+        )
+        if type_of_the_performer_value is None and performed_in_value is not None:
+            return Artist.objects.filter(performed_in__icontains=performed_in_value)
+        elif performed_in_value is None and type_of_the_performer_value is not None:
+            return Artist.objects.filter(
+                type_of_the_performer__icontains=type_of_the_performer_value
+            )
+        elif type_of_the_performer_value is not None and performed_in_value is not None:
+            return Artist.objects.filter(
+                Q(performed_in__icontains=performed_in_value)
+                and Q(type_of_the_performer__icontains=type_of_the_performer_value)
+            )
 
 
 # NORMAL USER
