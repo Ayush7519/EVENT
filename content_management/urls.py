@@ -81,4 +81,14 @@ urlpatterns = [
         views.BlogDetailApiView.as_view(),
         name="path to see the deatail of the blog",
     ),
+    path(
+        "comment/create/<int:id>/",
+        views.CommentCreateApiView.as_view(),
+        name="path to create the comment in the blog",
+    ),
+    path(
+        "comment/read/<int:id>/",
+        views.CommentListApiView.as_view(),
+        name="path to read the comment based on the blog id.",
+    ),
 ]

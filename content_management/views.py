@@ -13,9 +13,11 @@ from rest_framework.views import APIView
 from account.renders import UserRenderer
 from ems.pagination import MyPageNumberPagination
 
-from .models import Blog, Content_Management, Heading
+from .models import Blog, Comment, Content_Management, Heading
 from .serializer import (
     BlogSerializer,
+    CommentCustomSerializer,
+    CommentSerializer,
     Content_ManagementListSerializer,
     Content_ManagementSerializer,
     HeadingSerializer,
@@ -282,3 +284,51 @@ class BlogDetailApiView(generics.RetrieveAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
     renderer_classes = [UserRenderer]
+
+
+# for the comment model.
+# comment create.
+class CommentCreateApiView(APIView):
+    renderer_classes = [UserRenderer]
+
+    def post(self, request, id, *args, **kwargs):
+        blog = Blog.objects.get(pk=id)
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.validated_data["blog"] = blog
+            serializer.save()
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+# comment list.
+class CommentListApiView(generics.ListAPIView):
+    serializer_class = CommentCustomSerializer
+    renderer_classes = [UserRenderer]
+
+    def get_queryset(self):
+        id = self.kwargs["id"]
+        return Comment.objects.filter(blog=id)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if queryset.exists():
+            serializer = self.get_serializer(
+                queryset,
+                many=True,
+            )
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                "No comments found for this blog",
+                status=status.HTTP_404_NOT_FOUND,
+            )

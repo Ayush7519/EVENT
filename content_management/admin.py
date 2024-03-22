@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Blog, Content_Management, Heading
+from .models import Blog, Comment, Content_Management, Heading
 
 
 # admin registration for the heading.
@@ -33,6 +33,7 @@ admin.site.register(Content_Management, Content_ManagementAdmin)
 # creating the admin pannel for the blog.
 class Blog_Admin(admin.ModelAdmin):
     list_display = (
+        "id",
         "content",
         "date_created",
         "date_updated",
@@ -42,3 +43,18 @@ class Blog_Admin(admin.ModelAdmin):
 
 
 admin.site.register(Blog, Blog_Admin)
+
+
+# regstring the comment.
+class Comment_Admin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "blog",
+        "content",
+        "data_created",
+        "data_updated",
+        "like",
+    )
+
+
+admin.site.register(Comment, Comment_Admin)

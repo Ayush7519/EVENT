@@ -1,7 +1,7 @@
 from django.utils.crypto import get_random_string
 from rest_framework import serializers
 
-from .models import Blog, Content_Management, Heading
+from .models import Blog, Comment, Content_Management, Heading
 
 
 # Content_management
@@ -55,3 +55,40 @@ class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
         fields = "__all__"
+
+
+# for the comment
+# serializer for the comment create.
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = "__all__"
+
+
+# serializer for the custom comment.
+class CommentCustomSerializer(serializers.ModelSerializer):
+    data_created = serializers.SerializerMethodField()
+    data_updated = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Comment
+        fields = (
+            "id",
+            "name",
+            "content",
+            "data_created",
+            "data_updated",
+            "like",
+        )
+
+    def get_data_created(self, obj):
+        return {
+            "date": obj.data_created.strftime("%Y-%m-%d"),
+            "time": obj.data_created.strftime("%H:%M:%S"),
+        }
+
+    def get_data_updated(self, obj):
+        return {
+            "date": obj.data_created.strftime("%Y-%m-%d"),
+            "time": obj.data_created.strftime("%H:%M:%S"),
+        }
