@@ -208,7 +208,8 @@ def initiate_payment(request):
         }
     )
     headers = {
-        "Authorization": "key 77e1305ba1704cd49000f502eb653960",
+        "Authorization": "key 094f7156a6c24974b2cb573181689b33",
+        # "Authorization": "key 2466a7e05cc84037ad881dfcd3ac6ba6",
         "Content-Type": "application/json",
     }
     print(headers)
@@ -217,21 +218,7 @@ def initiate_payment(request):
     print(response.text)
     new_response = json.loads(response.text)
     print("this is the response converted into the python form", new_response)
-    # return Response(response.text)
 
-    # if response.status_code == 200:
-    #     new_response = json.loads(response.text)
-    #     payment_url = new_response.get("payment_url")
-    #     if payment_url:
-    #         print(payment_url)
-    #         return HttpResponseRedirect(redirect_to=payment_url)
-    #     else:
-    #         return JsonResponse({"error": "Payment URL not found in response"})
-    # else:
-    #     return JsonResponse(
-    #         {"error": "Failed to initiate payment", "details": response.text},
-    #         status=response.status_code,
-    #     )
     if response.status_code == 200:
         new_response = json.loads(response.text)
         payment_url = new_response.get("payment_url")

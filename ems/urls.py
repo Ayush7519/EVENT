@@ -6,6 +6,12 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
+from notification import routing as notification_routing
+
+# integrating the web socket.
+# Import the WebSocket URL patterns
+websocket_urlpatterns = notification_routing.websocket_urlpatterns
+
 # for the swagger documentation.
 schema_view = get_schema_view(
     openapi.Info(
@@ -27,7 +33,8 @@ urlpatterns = [
     path("", include("emsadmin.urls")),
     path("", include("booking.urls")),
     path("", include("notification.urls")),
-    # path("", include("notification.routing")),
+    # path for the web socket.
+    path("", include(websocket_urlpatterns)),
     # for the swagger documentations.
     path(
         "swagger/",
