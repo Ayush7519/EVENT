@@ -484,7 +484,7 @@ def recommendation(request):
     most_common_value = None
     user_genre_list = []
     user = request.user
-    user_ticket_data = Ticket.objects.filter(booked_by=user)
+    user_ticket_data = Ticket.objects.filter(booked_by=user.username)
     for details in user_ticket_data:
         event_info = details.event
         if event_info.genres is not None:
@@ -510,17 +510,16 @@ def recommendation(request):
     # print(sorted_event_list)
 
     # serializating the data.
-    i = 1
     serializer_data = []
     for event in sorted_event_list:
         event_id = get_title_from_id(event[0])
         event_data = Event.objects.get(id=event_id)
-        serializer = RecommendedEvent_Serializer(event_data)
-        serializer_data.append(serializer.data)
-        print(serializer_data)
-        i = i + 1
-        if i > 4:
-            break
+        if not event_data.event_completed == "False" and event_data.status == "Accept":
+            serializer = RecommendedEvent_Serializer(event_data)
+            serializer_data.append(serializer.data)
+            print(serializer_data)
+            if len(serializer_data) >= 4:
+                break
     return Response(
         serializer_data,
         status=status.HTTP_200_OK,
