@@ -16,6 +16,9 @@ class Notification(models.Model):
     send_on = models.DateTimeField()
     sent = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.message
+
 
 @receiver(post_save, sender=Notification)
 def notification_handler(sender, instance, created, **kwargs):

@@ -1,10 +1,8 @@
 id,event_name,genres,artist,location,event_completed
 34,jkjkhuygtfrvv,,account.Artist.None,Naryani Resort,False
 35,aasadasdasdasdasdasd,,account.Artist.None,Naryani Resort,False
-40,trying the ticket bookingfdfoidoif,,account.Artist.None,bharatpur,False
 41,The Greate Progrmadfsdfsdfsdfsdfdsf,Melody,account.Artist.None,Naryani Resort,False
 42,The Greate Progrmasdasdasada,Hiphop/Rap,account.Artist.None,Naryani Resort,False
-45,trying the ticket bookingfdfoidoif,Melody,account.Artist.None,bharatpur,False
 46,musice festa skdlfsld slkdjflskdf lskdjflksjdf,Electronic/Dance,account.Artist.None,CMT RESORT,False
 47,Event By Nabin,Melody,account.Artist.None,CMT RESORT,False
 48,The Greate Progrmadkjhksd fksdjhfks dfkjh,Rock,account.Artist.None,ghgghg,False
@@ -23,6 +21,8 @@ id,event_name,genres,artist,location,event_completed
 61,qqqqqqqqqqqqqqqqqq,Rock,account.Artist.None,CMT RESORT,False
 83,hdskjfkjsdhkjhsdkjfhskdjfs,Melody,account.Artist.None,CMT RESORT,False
 84,lskdjlkfjsdlkjflsd,Pop,account.Artist.None,Naryani Resort,False
-85,dsfsdfkjsdlkjlskjdfljsdf,Rock,account.Artist.None,CMT RESORT,False
-105,trying the ticket bookingfdfoidoif,Melody,account.Artist.None,bharatpur,False
 125,Sparkle Gala A Night of Elegance,Melody,account.Artist.None,CMT RESORT,False
+126,Music Fest Extravaganza,Rock,account.Artist.None,Naryani Resort,False
+127,Tech Summit 2024 Innovate Tomorrow,Electronic/Dance,account.Artist.None,CMT RESORT,False
+128,Artistry in Motion Creative Showcase,Classical,account.Artist.None,Siraichuli Hotel,False
+129,Jazz Jubilation Rhythms of the Night,Electronic/Dance,account.Artist.None,Royal Century,False

@@ -443,7 +443,6 @@ class EventAcceptAndDeclineApiView(APIView):
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])
 def recommendation(request):
-    print("from the notification")
 
     # helper function for the recommendation system.
     def get_title_from_id(index):
@@ -517,7 +516,6 @@ def recommendation(request):
         if not event_data.event_completed == "False" and event_data.status == "Accept":
             serializer = RecommendedEvent_Serializer(event_data)
             serializer_data.append(serializer.data)
-            print(serializer_data)
             if len(serializer_data) >= 4:
                 break
     return Response(
