@@ -11,7 +11,8 @@ urlpatterns = [
     path(
         "user/booked/ticket/",
         views.UserBookedTicketApiView.as_view(),
-        name="path to get the list of ticket booked by the normal user in their profile.",
+        # name="path to get the list of ticket booked by the normal user in their profile.",
+        name="user_booked_ticket",
     ),
     path(
         "grpah/",
@@ -23,4 +24,11 @@ urlpatterns = [
         views.initiate_payment,
         name="payment",
     ),
+    path(
+        "payment/verification/<int:user_id>/",
+        views.VerifyPayment,
+        name="payment verification",
+    ),
+    # path("tests/", views.session_data, name="session_data"),
+    # path("session/", views.sessio),
 ]

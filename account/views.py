@@ -96,6 +96,7 @@ class UserLoginView(APIView):
             user = authenticate(email=email, password=password)
             print(user)
             if user is not None:
+                uid = user.id
                 user_type = user.is_admin
                 user_artist = user.is_artist
                 user_nrmuser = user.is_user
@@ -107,6 +108,7 @@ class UserLoginView(APIView):
                         "artist": user_artist,
                         "nrmuser": user_nrmuser,
                         "msg": "Login Successfully",
+                        "id": uid,
                     },
                     status=status.HTTP_200_OK,
                 )
